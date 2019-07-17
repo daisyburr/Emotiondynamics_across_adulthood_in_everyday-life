@@ -3,7 +3,7 @@ setwd("/Users/daisyburr/Dropbox/Duke/Samanez-Larkin/subval/EMA")
 
 #SETUP####
 #*read in####
-d <- read.csv("./subval_EMA_clean.csv", header = T)
+d <- read.csv("./Emotion_Aging_EMA.csv", header = T)
 
 
 #*rename####
