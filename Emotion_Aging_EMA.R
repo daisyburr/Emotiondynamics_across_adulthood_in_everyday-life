@@ -332,54 +332,58 @@ interact_plot(N_supp, pred = "age", modx = "swlsmean", legend.main = "Well-being
 
 #*were you successful####
 #models cant include desire resist or desire enacted
-
-suc_reg <- glmer(succ_reg ~ others_present + desire_conflict_personal_goals + desire_strength + age + p_rmssd_avg + n_rmssd_avg + swlsmean + others_present:age + desire_conflict_personal_goals:age + desire_strength:age + p_rmssd_avg:age + n_rmssd_avg:age + swlsmean:age + (1|subject), data = d, family = binomial, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
+suc_reg <- glmer(succ_reg ~ others_present + desire_conflict_personal_goals + desire_strength + age + p_rmssd_avg + p_avg + n_rmssd_avg + n_avg + swlsmean + others_present:age + desire_conflict_personal_goals:age + desire_strength:age + p_rmssd_avg:age + p_avg:age + n_rmssd_avg:age + n_avg:age + swlsmean:age + (1|subject), data = d, family = binomial, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 summ(suc_reg, center=TRUE, confint = TRUE)
-#                                             Est.    2.5%   97.5%   z val.      p
-#(Intercept)                                 2.85    2.54    3.17    17.91   0.00
 #others_present                             -0.14   -0.48    0.21    -0.77   0.44
-#desire_conflict_personal_goals             -0.37   -0.50   -0.24    -5.73   0.00
-#desire_strength                            -0.16   -0.29   -0.02    -2.23   0.03
-#age                                         0.50    0.19    0.81     3.15   0.00
-#p_rmssd_avg                                -0.02   -1.25    1.20    -0.04   0.97
-#n_rmssd_avg                                 0.30   -1.02    1.61     0.44   0.66
-#swlsmean                                   -0.03   -0.25    0.19    -0.30   0.77
-#others_present:age                         -0.00   -0.36    0.36    -0.02   0.98
-#desire_conflict_personal_goals:age         -0.10   -0.24    0.03    -1.52   0.13
-#desire_strength:age                        -0.07   -0.21    0.07    -0.99   0.32
-#age:p_rmssd_avg                             0.90   -0.27    2.08     1.51   0.13
-#age:n_rmssd_avg                            -1.38   -2.71   -0.06    -2.04   0.04
-#age:swlsmean                               -0.30   -0.52   -0.07    -2.59   0.01
+#desire_conflict_personal_goals             -0.36   -0.49   -0.23    -5.37   0.00
+#desire_strength                            -0.14   -0.28   -0.00    -1.99   0.0466
+#age                                         0.49    0.18    0.81     3.07   0.00
+#p_rmssd_avg                                -0.14   -1.40    1.11    -0.22   0.82
+#p_avg                                      -0.21   -0.46    0.05    -1.59   0.11
+#n_rmssd_avg                                 0.71   -0.69    2.10     0.99   0.32
+#n_avg                                      -0.45   -0.81   -0.09    -2.47   0.01
+#swlsmean                                   -0.03   -0.25    0.20    -0.23   0.82
+#others_present:age                         -0.02   -0.38    0.34    -0.11   0.91
+#desire_conflict_personal_goals:age         -0.08   -0.22    0.05    -1.19   0.24
+#desire_strength:age                        -0.07   -0.22    0.07    -0.98   0.32
+#age:p_rmssd_avg                             0.90   -0.32    2.12     1.45   0.15
+#age:p_avg                                  -0.00   -0.27    0.27    -0.02   0.99
+#age:n_rmssd_avg                            -1.31   -2.73    0.12    -1.80   0.07
+#age:n_avg                                  -0.23   -0.61    0.16    -1.16   0.25
+#age:swlsmean                               -0.31   -0.54   -0.08    -2.66   0.01
 
 #y axis is predicted probability of successful regulation
+effect_plot(suc_reg, pred = "n_avg", x.label = "Negative affect", interval = TRUE, plot.points=TRUE)
 succ_reg_age_wb <- interact_plot(suc_reg, pred = age, modx = swlsmean, interval = TRUE, outcome.scale = "response", y.label = "Predicted probabiltiy of successful regulation", x.label = "Age", legend.main = "Well-being")
-succ_reg_age_nrmssd <- interact_plot(suc_reg, pred = age, modx = n_rmssd_avg, interval = TRUE, outcome.scale = "response", y.label = "Predicted probabiltiy of successful regulation", x.label = "Age", legend.main = "Negative affect instability")
+succ_reg_age_nrmssd <- interact_plot(suc_reg, pred = age, modx = n_rmssd_avg, interval = TRUE, outcome.scale = "response", y.label = "Predicted probabiltiy of successful regulation", x.label = "Age (marginally \n significant interaction", legend.main = "Negative affect instability")
 
 grid.arrange(succ_reg_age_wb, succ_reg_age_nrmssd)
 
-coef_names = c("Age:Well-being" = "age:swlsmean", "Age:Negative affect instability" = "age:n_rmssd_avg", "Age:Positive affect instability" = "age:p_rmssd_avg", "Desire strength:Age" = "desire_strength:age", "Desire conflicts goals:Age" = "desire_conflict_personal_goals:age", "Others present:Age" = "others_present:age", "Well-being" = "swlsmean", "Negative affect instability" = "n_rmssd_avg", "Positive affect instability" = "p_rmssd_avg", "Age" = "age", "Desire strength" = "desire_strength", "Desire conflicts goals" = "desire_conflict_personal_goals", "Others present" = "others_present")
-plot_summs(suc_reg, center = TRUE, plot.distributions = TRUE, robust = TRUE, coefs = coef_names)
+coef_names = c("Age:Negative affect" = "age:n_avg", "Age:Positive affect" = "age:p_avg","Age:Well-being" = "age:swlsmean", "Age:Negative affect instability" = "age:n_rmssd_avg", "Age:Positive affect instability" = "age:p_rmssd_avg", "Age:Desire strength" = "desire_strength:age", "Age:Desire conflicts goals" = "desire_conflict_personal_goals:age", "Age:Others present" = "others_present:age", "Well-being" = "swlsmean", "Negative affect instability" = "n_rmssd_avg", "Positive affect instability" = "p_rmssd_avg", "Age" = "age", "Desire strength" = "desire_strength", "Desire conflicts goals" = "desire_conflict_personal_goals", "Others present" = "others_present", "Positive affect" = "p_avg", "Negative affect" = "n_avg")
+plot_summs(suc_reg_2, center = TRUE, plot.distributions = TRUE, robust = TRUE, coefs = coef_names)
 
 
-
-#supplemetnary (only pos and neg, not averaged)
-suc_reg_supp <- glmer(succ_reg ~ others_present + desire_conflict_personal_goals + desire_strength + age + p_rmssd + n_rmssd + swlsmean + others_present:age + desire_conflict_personal_goals:age + desire_strength:age + p_rmssd:age + n_rmssd:age + swlsmean:age + (1|subject), data = d, family = binomial, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
+#supplementary (only pos and neg, not averaged)
+suc_reg_supp <- glmer(succ_reg ~ others_present + desire_conflict_personal_goals + desire_strength + age + p_rmssd + p + n_rmssd + n + swlsmean + others_present:age + desire_conflict_personal_goals:age + desire_strength:age + p_rmssd:age + p:age + n_rmssd:age + n:age + swlsmean:age + (1|subject), data = d, family = binomial, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 summ(suc_reg_supp, center=TRUE, confint = TRUE)
 #                                             Est.    2.5%   97.5%   z val.      p
-# (Intercept)                                 2.90    2.59    3.22    17.99   0.00
-#others_present                             -0.14   -0.49    0.20    -0.81   0.42
-#desire_conflict_personal_goals             -0.37   -0.50   -0.25    -5.79   0.00
-#desire_strength                            -0.15   -0.29   -0.01    -2.13   0.03
-#age                                         0.50    0.19    0.82     3.16   0.00
-#p_rmssd                                     0.01   -0.83    0.84     0.02   0.99
-#n_rmssd                                     0.26   -0.30    0.83     0.91   0.36
-#swlsmean                                    0.04   -0.18    0.25     0.33   0.74
-#others_present:age                          0.00   -0.35    0.36     0.02   0.98
-#desire_conflict_personal_goals:age         -0.12   -0.26    0.01    -1.82   0.07
-#desire_strength:age                        -0.08   -0.22    0.07    -1.05   0.29
-#age:p_rmssd                                 0.66   -0.20    1.53     1.51   0.13
-#age:n_rmssd                                -0.37   -0.94    0.20    -1.27   0.20
-#age:swlsmean                               -0.30   -0.52   -0.08    -2.63   0.01
+#others_present                             -0.14   -0.48    0.21    -0.78   0.43
+#desire_conflict_personal_goals             -0.37   -0.50   -0.24    -5.59   0.00
+#desire_strength                            -0.15   -0.29   -0.01    -2.14   0.03
+#age                                         0.52    0.20    0.84     3.23   0.00
+#p_rmssd                                    -0.03   -0.87    0.81    -0.08   0.94
+#p                                          -0.07   -0.28    0.13    -0.72   0.47
+#n_rmssd                                     0.39   -0.21    0.99     1.29   0.20
+#n                                          -0.18   -0.44    0.09    -1.30   0.19
+#swlsmean                                    0.04   -0.18    0.26     0.33   0.74
+#others_present:age                         -0.01   -0.36    0.35    -0.04   0.97
+#desire_conflict_personal_goals:age         -0.12   -0.25    0.02    -1.65   0.10
+#desire_strength:age                        -0.08   -0.22    0.06    -1.13   0.26
+#age:p_rmssd                                 0.63   -0.24    1.50     1.41   0.16
+#age:p                                      -0.01   -0.22    0.21    -0.05   0.96
+#age:n_rmssd                                -0.25   -0.86    0.35    -0.82   0.41
+#age:n                                      -0.16   -0.45    0.13    -1.07   0.28
+#age:swlsmean                               -0.31   -0.54   -0.09    -2.69   0.01
 
 
 
