@@ -1,3 +1,4 @@
+#updated 08/07/19 by DB to run supplemental analyses on age and desire strength, desire frequency, and percent resistance attempts 
 setwd("/Users/daisyburr/Dropbox/Duke/Samanez-Larkin/subval/EMA")
 
 
@@ -111,9 +112,9 @@ describe(d$age)
 d$age <- scale(d$age)
 
 #Race brekadown
-prop.table(table(d$Race))
-#missing             #Asian       Black    Hispanic       White 
-#0.328751097 0.009066979 0.054109389 0.008482012 0.599590524 
+prop.table(table(d$race))
+#Asian         Black        Hispanic       White 
+#0.036050799 0.091356002 0.009832036 0.862761163
 
 describe(d$succ_reg)
 #       n  missing distinct 
@@ -126,7 +127,7 @@ describe(d$succ_reg)
 
 
 #*MODELS####
-library("optimx") #lmer optimizer
+library(optimx) #lmer optimizer
 library(lme4) #for mixed models
 library(lmerTest) #for mixed models; calculate p vals with Satterthwaite’s method
 library(jtools) #for plots; p values calculated using Satterthwaite d.f.
@@ -179,7 +180,7 @@ export_summs(P_mean_age, P_mean, error_format = "({std.error})",
              statistics = c(N = "nobs", R2 = "r.squared"),
              to.file = "docx", file.name = "test.docx", scale = TRUE, robust = TRUE)
 
-#*supplemental pos (just pos)
+#*supplemental pos (just pos not pooled variance)
 P_supp_age <- lmer(p ~ age + (1|subject), data = d, control = lmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "bobyqa", starttests = FALSE, kkt = FALSE)))
 summ(P_supp_age, center = TRUE, confint = TRUE)
 #                     Est.   2.5%   97.5%   t val.     d.f.      p
@@ -221,7 +222,7 @@ N_age_wb <- interact_plot(N_mean, pred = "age", modx = "swlsmean", x.label = "Ag
 
 grid.arrange(P_age,N_age,P_age_controlling_wb, N_age_controlling_wb, P_age_wb, N_age_wb, nrow = 2)
 
-#*supplemental neg (just neg)
+#*supplemental neg (just neg not pooled variance)
 #just age
 N_supp_age <- lmer(n ~ age + (1|subject), data = d, control = lmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "bobyqa", starttests = FALSE, kkt = FALSE)))
 summ(N_supp_age, center = TRUE, confint = TRUE)
@@ -329,6 +330,58 @@ summ(N_supp, center = TRUE, confint = TRUE)
 effect_plot(N_supp, pred = "swlsmean", x.label = "Well-being", interval = TRUE, plot.points=TRUE)
 interact_plot(N_supp, pred = "age", modx = "swlsmean", legend.main = "Well-being", interval = TRUE, plot.points=TRUE)
 
+
+#*supplemental: age x well being predicting desire strength####
+des_stren <- lmer(desire_strength ~ age * swlsmean + (1|subject), data = d)
+summ(des_stren, center=TRUE, confint = TRUE)
+#                    Est.    2.5%   97.5%   t val.     d.f.      p
+#(Intercept)           4.39    4.25    4.54    59.05   103.98   0.00
+#age                   0.21    0.06    0.36     2.79   103.04   0.01
+#swlsmean              0.08   -0.05    0.21     1.24   101.75   0.22
+#age:swlsmean         -0.10   -0.22    0.03    -1.49   100.01   0.14
+effect_plot(des_stren, pred = "age", x.label = "Age", y.label = "Desire strength", interval = TRUE, plot.points=TRUE)
+
+
+
+#*supplemental: age x well being predicting proportion desires were present####
+d$desire_present <- ifelse(d$desire_type != 13, 1, 0)
+proportion_desire_present <- d %>% 
+  count(subject, desire_present) %>%          
+  mutate(prop = prop.table(n))
+
+proportion_desire_present$prop_desire_present <- proportion_desire_present$prop
+
+d <- merge(d, proportion_desire_present, by = "subject")
+
+d$prop_desire_present <- (1-d$prop_desire_present)
+
+des_proportion <- lmer(prop_desire_present ~ age * swlsmean + (1|subject), data = d)
+summ(des_proportion, center=TRUE, confint = TRUE)
+#Est.    2.5%   97.5%    t val.     d.f.      p
+#(Intercept)           0.99    0.99    0.99   2559.50   113.00   0.00
+#age                  -0.00   -0.00    0.00     -0.14   113.00   0.89
+#swlsmean              0.00   -0.00    0.00      0.03   113.00   0.98
+#age:swlsmean          0.00   -0.00    0.00      0.62   113.00   0.53
+
+
+#*supplemental: age x well being predicting proportion attempt resist###
+proportion_attempt_resist <- d %>% 
+  count(subject, attempt_resist) %>%          
+  mutate(prop = prop.table(n))
+
+proportion_attempt_resist$prop_attempt_resist <- proportion_attempt_resist$prop
+
+d <- merge(d, proportion_attempt_resist, by = "subject")
+
+d$prop_attempt_resist <- (1-d$prop_attempt_resist)
+
+des_proportion_attempt_resist <- lmer(prop_attempt_resist ~ age * swlsmean + (1|subject), data = d)
+summ(des_proportion_attempt_resist, center=TRUE, confint = TRUE)
+#                      Est.    2.5%   97.5%    t val.    d.f.      p
+#(Intercept)           1.00    0.99    1.00   5275.78   96.59   0.00
+#age                  -0.00   -0.00    0.00     -0.85   96.38   0.40
+#swlsmean              0.00   -0.00    0.00      0.04   95.67   0.97
+#age:swlsmean         -0.00   -0.00    0.00     -0.40   94.49   0.69
 
 #*were you successful####
 #models cant include desire resist or desire enacted
