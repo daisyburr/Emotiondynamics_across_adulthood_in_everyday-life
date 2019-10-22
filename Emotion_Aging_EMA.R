@@ -165,10 +165,10 @@ summ(P_mean, center = TRUE, confint = TRUE)
 #swlsmean             0.18    0.10    0.25     4.62   109.68   0.00
 #age:swlsmean         0.02   -0.05    0.10     0.57   107.95   0.57
 
-P_age_controlling_wb <- effect_plot(P_mean, pred = "age",  x.label = "Age \n (controlling for well-being)", y.label = "Positive Affect", interval=TRUE, plot.points = TRUE)
+P_age_controlling_wb <- effect_plot(P_mean, pred = "age",  x.label = "Age \n (controlling for well-being)", y.label = "Positive affect", interval=TRUE, plot.points = TRUE)
 P_age_controlling_wb <- P_age_controlling_wb + theme_classic()
 
-P_age_wb <- interact_plot(P_mean, pred = age, modx = swlsmean, x.label = "Age \n (non-significant interaction)", y.label = "Positive Affect", interval = TRUE, plot.points = TRUE, legend.main = "Well-being") 
+P_age_wb <- interact_plot(P_mean, pred = age, modx = swlsmean, x.label = "Age \n (non-significant interaction)", y.label = "Positive affect", interval = TRUE, plot.points = TRUE, legend.main = "Well-being") 
 P_age_wb <- P_age_wb + theme_classic() + theme(legend.position = "bottom")
 
 #*supplemental pos (just pos not pooled variance)
@@ -214,10 +214,10 @@ summ(N_mean, center = TRUE,  confint = TRUE)
 #age:swlsmean         -0.06   -0.12   -0.01    -2.22   106.35   0.03
 
 
-N_age_controlling_wb <- effect_plot(N_mean_age, pred = "age", x.label = "Age \n (controlling for well-being)", y.label = "Negative Affect", interval=TRUE, plot.points = TRUE)
+N_age_controlling_wb <- effect_plot(N_mean_age, pred = "age", x.label = "Age \n (controlling for well-being)", y.label = "Negative affect", interval=TRUE, plot.points = TRUE)
 N_age_controlling_wb <- N_age_controlling_wb + theme_apa()
 
-N_age_wb <- interact_plot(N_mean, pred = "age", modx = "swlsmean", x.label = "Age", y.label = "Negative Affect", legend.main = "Well-being", interval = TRUE, plot.points = TRUE)
+N_age_wb <- interact_plot(N_mean, pred = "age", modx = "swlsmean", x.label = "Age", y.label = "Negative affect", legend.main = "Well-being", interval = TRUE, plot.points = TRUE)
 N_age_wb <- N_age_wb + theme_classic() + theme(legend.position = "bottom")
 
 
@@ -281,15 +281,15 @@ summ(P, center = TRUE, confint = TRUE)
 
 
 #age
-P_age <- effect_plot(P, pred = "age", x.label = "Age \n (controlling for well-being)", y.label = "Positive Affect \n Instability", interval = TRUE, plot.points=TRUE)
+P_age <- effect_plot(P, pred = "age", x.label = "Age \n (controlling for well-being)", y.label = "Positive affect \n instability", interval = TRUE, plot.points=TRUE)
 P_age <- P_age + ylim(0,2) + theme_classic() 
 
 #wb
-P_wb <- effect_plot(P, pred ="swlsmean", x.label = "Well-being \n (non-significant)", y.label = "Positive Affect \n Instability", interval = TRUE, plot.points = TRUE, scale = TRUE)
+P_wb <- effect_plot(P, pred ="swlsmean", x.label = "Well-being \n (non-significant)", y.label = "Positive affect \n instability", interval = TRUE, plot.points = TRUE, scale = TRUE)
 P_wb <- P_wb + ylim(0,2) + theme_classic()
 
 #int
-P_age_wb <- interact_plot(P, pred = "age", modx = "swlsmean", x.label = "Age", y.label = "Positive Affect \n Instability", legend.main = "Well-being", interval = TRUE, plot.points=TRUE)
+P_age_wb <- interact_plot(P, pred = "age", modx = "swlsmean", x.label = "Age", y.label = "Positive affect \n instability", legend.main = "Well-being", interval = TRUE, plot.points=TRUE)
 P_age_wb <- P_age_wb + ylim(0,2) + theme_classic() + theme(legend.position = "bottom")
 
 #supplmental (just pos not pooled variance)
@@ -315,7 +315,7 @@ summ(N, center = TRUE, confint = TRUE)
 #age:swlsmean         -0.07   -0.08   -0.06   -13.45   0.68   0.11
 
 #age
-N_age <- effect_plot(N, pred ="age", x.label = "Age \n (controlling for well-being) \n (non-significant)", y.label = "Negative Affect \n Instability", interval = TRUE, plot.points = TRUE, scale = TRUE)
+N_age <- effect_plot(N, pred ="age", x.label = "Age \n (controlling for well-being) \n (non-significant)", y.label = "Negative affect \n instability", interval = TRUE, plot.points = TRUE, scale = TRUE)
 N_age <- N_age + ylim(0,2) + theme_classic()
 
 #test
@@ -325,11 +325,11 @@ loadfonts(device="win")
 ggsave("N_age.eps", width = 20, height = 20, device = "eps", family = "Times")
 
 #wb
-N_wb <- effect_plot(N, pred ="swlsmean", x.label = "Well-being  \n (non-significant)", y.label = "Negative Affect \n Instability", interval = TRUE, plot.points = TRUE, scale = TRUE)
+N_wb <- effect_plot(N, pred ="swlsmean", x.label = "Well-being  \n (non-significant)", y.label = "Negative affect \n instability", interval = TRUE, plot.points = TRUE, scale = TRUE)
 N_wb <- N_wb + ylim(0,2) + theme_classic()
 
 #int
-N_age_wb <- interact_plot(N, pred = "age", modx = "swlsmean", x.label = "Age \n (non-significant interaction)", y.label = "Negative Affect \n Instability", legend.main = "Well-being", interval = TRUE, plot.points=TRUE)
+N_age_wb <- interact_plot(N, pred = "age", modx = "swlsmean", x.label = "Age \n (non-significant interaction)", y.label = "Negative affect \n instability", legend.main = "Well-being", interval = TRUE, plot.points=TRUE)
 N_age_wb <- N_age_wb + ylim(0,2) + theme_classic() + theme(legend.position = "bottom")
 
 
@@ -420,7 +420,7 @@ d$prop_attempt_resist <- (1-d$prop_attempt_resist)
 des_proportion_attempt_resist <- lmer(prop_attempt_resist ~ age * swlsmean + (1|subject), data = d)
 summ(des_proportion_attempt_resist, center=TRUE, confint = TRUE)
 #Pseudo-R² (fixed effects) = 0.00 #no variability
-Pseudo-R² (total) = 0.30 
+#Pseudo-R² (total) = 0.30 
 #                      Est.    2.5%   97.5%    t val.    d.f.      p
 #(Intercept)           1.00    0.99    1.00   5284.83   96.53   0.00
 #age                  -0.00   -0.00    0.00     -0.86   96.31   0.39
