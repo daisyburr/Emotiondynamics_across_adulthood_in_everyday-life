@@ -117,14 +117,18 @@ prop.table(table(d$race))
 #Asian         Black        Hispanic       White 
 #0.036050799 0.091356002 0.009832036 0.862761163
 
-describe(d$succ_reg)
-#       n  missing distinct 
-#2434        0        2 
+succ_reg_table <- table(d$succ_reg)
+prop.table(succ_reg_table)
+#0 unsuccesful          1 successful
+#0.08394758              0.91605242 
 
-#Value          0     1
-#Frequency    204  2230
-#Proportion 0.084 0.916
 
+#average responses
+average_responses <- aggregate(date_ts ~ vsubject, d, length)
+describe(average_responses)
+#         vars   n  mean    sd median trimmed   mad min max range  skew kurtosis   se
+#subject    1 117 63.29 35.71     64   63.54 45.96   1 123   122 -0.05    -1.23 3.30
+#date_ts     2 117 20.87 10.04     24   21.53  7.41   1  41    40 -0.67    -0.76 0.93
 
 
 #*MODELS####
@@ -315,7 +319,7 @@ summ(N, center = TRUE, confint = TRUE)
 #age:swlsmean         -0.07   -0.08   -0.06   -13.45   0.68   0.11
 
 #age
-N_age <- effect_plot(N, pred ="age", x.label = "Age \n (controlling for well-being) \n (non-significant)", y.label = "Negative affect \n instability", interval = TRUE, plot.points = TRUE, scale = TRUE)
+N_age <- effect_plot(N, pred ="age", x.label = "Age \n (controlling for well-being) \n (non-significant)", y.label = "Negative affect \n instability", interval = TRUE, plot.points = TRUE)
 N_age <- N_age + ylim(0,2) + theme_classic()
 
 #test
@@ -325,7 +329,7 @@ loadfonts(device="win")
 ggsave("N_age.eps", width = 20, height = 20, device = "eps", family = "Times")
 
 #wb
-N_wb <- effect_plot(N, pred ="swlsmean", x.label = "Well-being  \n (non-significant)", y.label = "Negative affect \n instability", interval = TRUE, plot.points = TRUE, scale = TRUE)
+N_wb <- effect_plot(N, pred ="swlsmean", x.label = "Well-being  \n (non-significant)", y.label = "Negative affect \n instability", interval = TRUE, plot.points = TRUE)
 N_wb <- N_wb + ylim(0,2) + theme_classic()
 
 #int
@@ -454,7 +458,6 @@ summ(suc_reg, center=TRUE, confint = TRUE)
 #age:n_avg                                  -0.33   -0.62   -0.04    -2.23   0.03
 #age:swlsmean                               -0.48   -0.77   -0.18    -3.19   0.00
 
-
 #y axis is predicted probability of successful regulation
 succ_reg_age_wb <- interact_plot(suc_reg, pred = age, modx = swlsmean, interval = TRUE, outcome.scale = "response", y.label = "Predicted probabiltiy of successful regulation", x.label = "Age", legend.main = "Well-being")
 succ_reg_age_wb <- succ_reg_age_wb + theme_classic() + theme(legend.position = "bottom")
@@ -462,6 +465,7 @@ succ_reg_age_wb <- succ_reg_age_wb + theme_classic() + theme(legend.position = "
 ggsave("regulation_age_wb_effects.eps", plot = last_plot(), device = "eps",
        scale = 1, width = 7, height = 6, dpi = 300)
 
+interact_plot(suc_reg, pred = age, modx = desire_conflict_personal_goals, interval = TRUE, outcome.scale = "response", y.label = "Predicted probabiltiy of successful regulation", x.label = "Age", legend.main = "Well-being")
 
 
 #test
@@ -501,5 +505,7 @@ summ(suc_reg_supp, center=TRUE, confint = TRUE)
 #age:n_rmssd                                -0.48   -1.09    0.14    -1.52   0.13
 #age:n                                       0.00   -0.01    0.02     0.29   0.77
 #age:swlsmean                               -0.48   -0.77   -0.20    -3.31   0.00
+
+#y axis is predicted probability of successful regulation
 
 
