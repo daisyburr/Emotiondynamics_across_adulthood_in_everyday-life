@@ -131,6 +131,19 @@ describe(average_responses)
 #date_ts     2 117 20.87 10.04     24   21.53  7.41   1  41    40 -0.67    -0.76 0.93
 
 
+#*internal consistency of affect composites####
+library(psych)
+pos_com <- data.frame(d$lap, d$hap, d$p)
+neg_com <- data.frame(d$lan, d$han, d$n)
+
+alpha(pos_com)
+#raw_alpha std.alpha G6(smc) average_r S/N   ase mean   sd median_r
+#0.63      0.64     0.6      0.37 1.7 0.013  2.9 0.82     0.47
+
+alpha(neg_com)
+#raw_alpha std.alpha G6(smc) average_r  S/N   ase mean   sd median_r
+#0.38      0.44    0.41      0.21 0.79 0.022  1.5 0.57     0.11
+
 #*MODELS####
 library(optimx) #lmer optimizer
 library(lme4) #for mixed models
