@@ -47,6 +47,7 @@ library(sjlabelled)
 d$succ_reg <- ifelse(d$desire_type != 13 & d$attempt_resist == 1 & d$desire_enacted==1, 0, 1)
 set_label(d$succ_reg) <- "Successful Regulation"
 
+
 #well being mean (average life satisfaction, doesnt make sense to z score if using this)
 d$swlsmean <- (d$swls1 + d$swls2 + d$swls3 + d$swls4 + d$swls5)/5
 
@@ -108,9 +109,8 @@ describe(d$age)
 
 
 #*scale####
-#age
-d$age <- scale(d$age)
-d$swlsmean <- scale(d$swlsmean)
+#d$age <- scale(d$age)
+#d$swlsmean <- scale(d$swlsmean)
 
 #Race brekadown
 prop.table(table(d$race))
@@ -120,7 +120,7 @@ prop.table(table(d$race))
 succ_reg_table <- table(d$succ_reg)
 prop.table(succ_reg_table)
 #0 unsuccesful          1 successful
-#0.08394758              0.91605242 
+#0.086                  0.913
 
 
 #average responses
@@ -163,7 +163,7 @@ library(cowplot)
 #*pos####
 #just age
 P_mean_age <- lmer(p_avg ~ age + (1|subject), data = d, control = lmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "bobyqa", starttests = FALSE, kkt = FALSE)))
-summ(P_mean_age, center = TRUE, confint = TRUE)
+summ(P_mean_age, scale = TRUE, confint = TRUE)
 #Pseudo-R² (fixed effects) = 0.02
 #Pseudo-R² (total) = 0.36 
 #                     Est.   2.5%   97.5%   t val.     d.f.      p
@@ -173,7 +173,7 @@ summ(P_mean_age, center = TRUE, confint = TRUE)
 
 #age and wb
 P_mean <- lmer(p_avg ~ age * swlsmean + (1|subject), data = d, control = lmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "bobyqa", starttests = FALSE, kkt = FALSE)))
-summ(P_mean, center = TRUE, confint = TRUE)
+summ(P_mean, scale = TRUE, confint = TRUE)
 #Pseudo-R² (fixed effects) = 0.08
 #Pseudo-R² (total) = 0.37 
 #                     Est.    2.5%   97.5%   t val.     d.f.      p
@@ -190,7 +190,7 @@ P_age_wb <- P_age_wb + theme_classic() + theme(legend.position = "bottom")
 
 #*supplemental pos (just pos not pooled variance)
 P_supp_age <- lmer(p ~ age + (1|subject), data = d, control = lmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "bobyqa", starttests = FALSE, kkt = FALSE)))
-summ(P_supp_age, center = TRUE, confint = TRUE)
+summ(P_supp_age, scale = TRUE, confint = TRUE)
 #Pseudo-R² (fixed effects) = 0.02
 #Pseudo-R² (total) = 0.36 
 #                     Est.   2.5%   97.5%   t val.     d.f.      p
@@ -199,7 +199,7 @@ summ(P_supp_age, center = TRUE, confint = TRUE)
 
 #age and wb
 P_supp_age_wb <- lmer(p ~ age * swlsmean + (1|subject), data = d, control = lmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "bobyqa", starttests = FALSE, kkt = FALSE)))
-summ(P_supp_age_wb, center = TRUE, confint = TRUE)
+summ(P_supp_age_wb, scale = TRUE, confint = TRUE)
 #Pseudo-R² (fixed effects) = 0.09
 #Pseudo-R² (total) = 0.36 
 
@@ -212,7 +212,7 @@ summ(P_supp_age_wb, center = TRUE, confint = TRUE)
 #*neg####
 #just age
 N_mean_age <- lmer(n_avg ~ age + (1|subject), data = d, control = lmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "bobyqa", starttests = FALSE, kkt = FALSE)))
-summ(N_mean_age, center = TRUE, confint = TRUE)
+summ(N_mean_age, scale = TRUE, confint = TRUE)
 #Pseudo-R² (fixed effects) = 0.03
 #Pseudo-R² (total) = 0.30 
 #                     Est.    2.5%   97.5%   t val.     d.f.      p
@@ -221,7 +221,7 @@ summ(N_mean_age, center = TRUE, confint = TRUE)
 
 #age and wb
 N_mean <- lmer(n_avg ~ age * swlsmean + (1|subject), data = d, control = lmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "bobyqa", starttests = FALSE, kkt = FALSE)))
-summ(N_mean, center = TRUE,  confint = TRUE)
+summ(N_mean, scale = TRUE,  confint = TRUE)
 #Pseudo-R² (fixed effects) = 0.06
 #Pseudo-R² (total) = 0.30 
 #                       Est.      2.5%   97.5%   t val. d.f.     p
@@ -265,7 +265,7 @@ ggsave("mean_affect_effects.pdf", plot = last_plot(), device = "pdf",
 #*supplemental neg (just neg not pooled variance)
 #just age
 N_supp_age <- lmer(n ~ age + (1|subject), data = d, control = lmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "bobyqa", starttests = FALSE, kkt = FALSE)))
-summ(N_supp_age, center = TRUE, confint = TRUE)
+summ(N_supp_age, scale = TRUE, confint = TRUE)
 #Pseudo-R² (fixed effects) = 0.00
 #Pseudo-R² (total) = 0.28 
 #Est.    2.5%   97.5%   t val.     d.f.      p
@@ -274,7 +274,7 @@ summ(N_supp_age, center = TRUE, confint = TRUE)
 
 #age and wb
 N_supp_age_wb <- lmer(n ~ age * swlsmean + (1|subject), data = d, control = lmerControl(optimizer = "optimx", calc.derivs = FALSE, optCtrl = list(method = "bobyqa", starttests = FALSE, kkt = FALSE)))
-summ(N_supp_age_wb, center = TRUE, confint = TRUE)
+summ(N_supp_age_wb, scale = TRUE, confint = TRUE)
 #Pseudo-R² (fixed effects) = 0.05
 #Pseudo-R² (total) = 0.28 
 #                      Est.     2.5%   97.5%   t val.     d.f.      p
@@ -285,69 +285,94 @@ summ(N_supp_age_wb, center = TRUE, confint = TRUE)
 
 
 #*instability####
+
+#nonmixed df
+library(dplyr)
+d_wide <- d %>%
+  group_by(subject,age,swlsmean) %>%
+  dplyr::summarize(p_rmssd_avg = mean(p_rmssd_avg), n_rmssd_avg = mean(n_rmssd_avg), p_rmssd = mean(p_rmssd), n_rmssd = mean(n_rmssd))
+#turn to df so DAAG can use
+d_wide <- as.data.frame(d_wide)
+
+
 #*pos####
-P <- lmer(p_rmssd_avg ~ age * swlsmean + (1|subject), data = d,
-             control = lmerControl(optimizer ='optimx', optCtrl=list(method='L-BFGS-B'), (maxfun=2e9)))
-summ(P, center = TRUE, confint = TRUE)
-#Pseudo-R² (fixed effects) = 0.81
-# Est.    2.5%   97.5%   t val.     d.f.      p
-#(Intercept)           0.81    0.80    0.81   229.98   195.89   0.00
-#age                  -0.07   -0.08   -0.07   -21.00   202.45   0.00
-#swlsmean              0.00   -0.01    0.01     0.28   191.89   0.78
-#age:swlsmean         -0.02   -0.03   -0.02    -6.42   192.54   0.00
+P_nonlin <- lm(p_rmssd_avg ~ age * swlsmean, data = d_wide)
+summ(P_nonlin, scale = TRUE, confint = TRUE)
+#MODEL FIT:
+#F(3,109) = 3.68, p = 0.01
+#R² = 0.09
+#Adj. R² = 0.07 
+#Est.    2.5%   97.5%   t val.      p
+#(Intercept)           0.81    0.76    0.85    34.84   0.00
+#age                  -0.07   -0.12   -0.03    -3.18   0.00
+#swlsmean              0.00   -0.05    0.05     0.03   0.98
+#age:swlsmean         -0.02   -0.07    0.02    -0.98   0.33
 
 
 #age
-P_age <- effect_plot(P, pred = "age", x.label = "Age \n (controlling for well-being)", y.label = "Positive affect \n instability", interval = TRUE, plot.points=TRUE)
+P_age <- effect_plot(P_nonlin, pred = "age", x.label = "Age \n (controlling for well-being)", y.label = "Positive affect \n instability", interval = TRUE, plot.points=TRUE)
 P_age <- P_age + ylim(0,2) + theme_classic() 
 
 #wb
-P_wb <- effect_plot(P, pred ="swlsmean", x.label = "Well-being \n (non-significant)", y.label = "Positive affect \n instability", interval = TRUE, plot.points = TRUE, scale = TRUE)
+P_wb <- effect_plot(P_nonlin, pred ="swlsmean", x.label = "Well-being \n (non-significant)", y.label = "Positive affect \n instability", interval = TRUE, plot.points = TRUE, scale = TRUE)
 P_wb <- P_wb + ylim(0,2) + theme_classic()
 
 #int
-P_age_wb <- interact_plot(P, pred = "age", modx = "swlsmean", x.label = "Age", y.label = "Positive affect \n instability", legend.main = "Well-being", interval = TRUE, plot.points=TRUE)
+P_age_wb <- interact_plot(P_nonlin, pred = "age", modx = "swlsmean", x.label = "Age", y.label = "Positive affect \n instability \n (non-significant)", legend.main = "Well-being", interval = TRUE, plot.points=TRUE)
 P_age_wb <- P_age_wb + ylim(0,2) + theme_classic() + theme(legend.position = "bottom")
 
+
+
 #supplmental (just pos not pooled variance)
-P_supp <- lmer(p_rmssd ~ age * swlsmean + (1|subject), data = d,control = lmerControl(optimizer = "optimx", calc.derivs = FALSE,
-                                                                                     optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
-summ(P_supp, center = TRUE, confint = TRUE)
-#Pseudo-R² (fixed effects) = 0.65
-#Est.    2.5%   97.5%   t val.   d.f.      p
-#(Intercept)           1.01    0.99    1.02   139.50   2.37   0.00
-#age                  -0.08   -0.10   -0.07   -11.63   0.50   0.19
-#swlsmean              0.04    0.02    0.05     5.18   0.56   0.25
-#age:swlsmean         -0.04   -0.05   -0.02    -5.03   0.66   0.21
+P_nonlin_supp <- lm(p_rmssd ~ age * swlsmean, data = d_wide)
+summ(P_nonlin_supp, scale = TRUE, confint = TRUE)
+#Observations: 113 (4 missing obs. deleted)
+#F(3,109) = 3.13, p = 0.03
+#R² = 0.08
+#Adj. R² = 0.05 
+#Est.    2.5%   97.5%   t val.      p
+# (Intercept)           1.03    0.97    1.10    30.36   0.00
+#age                  -0.09   -0.16   -0.02    -2.61   0.01
+#swlsmean              0.04   -0.03    0.11     1.11   0.27
+#age:swlsmean         -0.03   -0.09    0.04    -0.82   0.41
 
 
 #*neg####
-N <- lmer(n_rmssd_avg ~ age * swlsmean + (1|subject), data = d,control = lmerControl(optimizer = "optimx", calc.derivs = FALSE,
-                                                                                 optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
-summ(N, center = TRUE, confint = TRUE)
-#Pseudo-R² (fixed effects) = 0.76
-#(Intercept)           0.57    0.56    0.58   114.01   1.29   0.00
-#age                  -0.06   -0.07   -0.05   -11.25   0.77   0.10
-#swlsmean             -0.04   -0.05   -0.03    -7.95   1.10   0.07
-#age:swlsmean         -0.07   -0.08   -0.06   -13.45   0.68   0.11
+N_nonlin <- lm(n_rmssd_avg ~ age * swlsmean, data = d_wide)
+summ(N_nonlin, scale = TRUE, confint = TRUE)
+#F(3,109) = 4.93, p = 0.00
+#R² = 0.12
+#Adj. R² = 0.10 
+#Est.    2.5%   97.5%   t val.      p
+#(Intercept)           0.57    0.52    0.61    24.12   0.00
+#age                  -0.05   -0.10   -0.01    -2.31   0.02
+#swlsmean             -0.04   -0.09    0.01    -1.65   0.10
+#age:swlsmean         -0.07   -0.11   -0.02    -2.86   0.01
 
 #age
-N_age <- effect_plot(N, pred ="age", x.label = "Age \n (controlling for well-being) \n (non-significant)", y.label = "Negative affect \n instability", interval = TRUE, plot.points = TRUE)
+N_age <- effect_plot(N_nonlin, pred ="age", x.label = "Age \n (controlling for well-being)", y.label = "Negative affect \n instability", interval = TRUE, plot.points = TRUE)
 N_age <- N_age + ylim(0,2) + theme_classic()
 
-#test
-library(extrafont)
-#font_import() only do this one time - it takes a while
-loadfonts(device="win")
-ggsave("N_age.eps", width = 20, height = 20, device = "eps", family = "Times")
-
 #wb
-N_wb <- effect_plot(N, pred ="swlsmean", x.label = "Well-being  \n (non-significant)", y.label = "Negative affect \n instability", interval = TRUE, plot.points = TRUE)
+N_wb <- effect_plot(N_nonlin, pred ="swlsmean", x.label = "Well-being  \n (non-significant)", y.label = "Negative affect \n instability", interval = TRUE, plot.points = TRUE)
 N_wb <- N_wb + ylim(0,2) + theme_classic()
 
 #int
-N_age_wb <- interact_plot(N, pred = "age", modx = "swlsmean", x.label = "Age \n (non-significant interaction)", y.label = "Negative affect \n instability", legend.main = "Well-being", interval = TRUE, plot.points=TRUE)
+N_age_wb <- interact_plot(N_nonlin, pred = "age", modx = "swlsmean", x.label = "Age", y.label = "Negative affect \n instability", legend.main = "Well-being", interval = TRUE, plot.points=TRUE)
 N_age_wb <- N_age_wb + ylim(0,2) + theme_classic() + theme(legend.position = "bottom")
+
+
+#supplmental (just neg not pooled variance)
+N_nonlin_supp <- lm(n_rmssd ~ age * swlsmean, data = d_wide)
+summ(N_nonlin_supp, scale = TRUE, confint = TRUE)
+#F(3,109) = 2.33, p = 0.08
+#R² = 0.06
+#Adj. R² = 0.03 
+#Est.    2.5%   97.5%   t val.      p
+#(Intercept)           0.60    0.51    0.69    13.41   0.00
+#age                  -0.07   -0.16    0.02    -1.50   0.14
+#swlsmean             -0.08   -0.17    0.01    -1.85   0.07
+#age:swlsmean         -0.07   -0.15    0.02    -1.48   0.14
 
 
 #shared legend
@@ -376,16 +401,6 @@ plot_grid(plots, legend, ncol = 1, rel_heights = c(1, .1))
 ggsave("instability_effects.pdf", plot = last_plot(), device = "pdf",
        scale = 1, width = 7, height = 7, dpi = 300)
 
-#supplmental (just neg not pooled variance)
-N_supp <- lmer(n_rmssd ~ age * swlsmean + (1|subject), data = d,control = lmerControl(optimizer = "optimx", calc.derivs = FALSE,
-                                                                                      optCtrl = list(method = "nlminb", starttests = FALSE, kkt = FALSE)))
-summ(N_supp, center = TRUE, confint = TRUE)
-#Pseudo-R² (fixed effects) = 0.60
-#Est.    2.5%   97.5%   t val.   d.f.      p
-#(Intercept)           0.61    0.59    0.63    64.21   6.17   0.00
-#age                  -0.07   -0.09   -0.05    -7.42   8.49   0.00
-#swlsmean             -0.09   -0.10   -0.07    -8.78   4.43   0.00
-#age:swlsmean         -0.07   -0.09   -0.05    -6.92   9.00   0.00
 
 #*age x well being predicting desire strength####
 des_stren <- lmer(desire_strength ~ age * swlsmean + (1|subject), data = d)
@@ -444,11 +459,12 @@ summ(des_proportion_attempt_resist, center=TRUE, confint = TRUE)
 #swlsmean              0.00   -0.00    0.00      0.04   95.62   0.97
 #age:swlsmean         -0.00   -0.00    0.00     -0.41   94.44   0.68
 
-
+  
 #*were you successful####
 #models cant include desire resist or desire enacted
-suc_reg <- glmer(succ_reg ~ others_present + desire_conflict_personal_goals + desire_strength + age + p_rmssd_avg + p_avg + n_rmssd_avg + n_avg + swlsmean + others_present:age + desire_conflict_personal_goals:age + desire_strength:age + p_rmssd_avg:age + p_avg:age + n_rmssd_avg:age + n_avg:age + swlsmean:age + (1|subject), data = d, family = binomial, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
-summ(suc_reg, center=TRUE, confint = TRUE)
+suc_reg <- glmer(succ_reg ~ others_present + desire_conflict_personal_goals + desire_strength + scale(age) + p_rmssd_avg + p_avg + n_rmssd_avg + n_avg + scale(swlsmean) + others_present:age + desire_conflict_personal_goals:age + desire_strength:age + p_rmssd_avg:age + p_avg:age + n_rmssd_avg:age + n_avg:age + swlsmean:age + (1|subject), data = d, family = binomial, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
+
+summ(suc_reg, scale=TRUE, confint = TRUE)
 #Pseudo-R² (fixed effects) = 0.16
 #Pseudo-R² (total) = 0.37 
 #                                            Est.    2.5%   97.5%   z val.      p
@@ -476,7 +492,7 @@ succ_reg_age_wb <- interact_plot(suc_reg, pred = age, modx = swlsmean, interval 
 succ_reg_age_wb <- succ_reg_age_wb + theme_classic() + theme(legend.position = "bottom")
 
 ggsave("regulation_age_wb_effects.eps", plot = last_plot(), device = "eps",
-       scale = 1, width = 7, height = 6, dpi = 300)
+       scale = 1, width = 3.5, height = 6, dpi = 300)
 
 interact_plot(suc_reg, pred = age, modx = desire_conflict_personal_goals, interval = TRUE, outcome.scale = "response", y.label = "Predicted probabiltiy of successful regulation", x.label = "Age", legend.main = "Well-being")
 
