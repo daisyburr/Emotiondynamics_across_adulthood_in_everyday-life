@@ -1,4 +1,4 @@
-#updated 10/21/19 by DB based on peer review
+#updated 10/30/19 by DB based on peer review
 setwd("/Users/daisyburr/Dropbox/Duke/Samanez-Larkin/subval/EMA")
 
 
@@ -108,19 +108,10 @@ describe(d$age)
 #2441      41.1   15.49     40    40.49 2    0.76  20       80    60        0.24    -1.31     0.31
 
 
-#*scale####
-#d$age <- scale(d$age)
-#d$swlsmean <- scale(d$swlsmean)
-
 #Race brekadown
 prop.table(table(d$race))
 #Asian         Black        Hispanic       White 
 #0.036050799 0.091356002 0.009832036 0.862761163
-
-succ_reg_table <- table(d$succ_reg)
-prop.table(succ_reg_table)
-#0 unsuccesful          1 successful
-#0.086                  0.913
 
 
 #average responses
@@ -185,7 +176,7 @@ summ(P_mean, scale = TRUE, confint = TRUE)
 P_age_controlling_wb <- effect_plot(P_mean, pred = "age",  x.label = "Age \n (controlling for well-being)", y.label = "Positive affect", interval=TRUE, plot.points = TRUE)
 P_age_controlling_wb <- P_age_controlling_wb + theme_classic()
 
-P_age_wb <- interact_plot(P_mean, pred = age, modx = swlsmean, x.label = "Age \n (non-significant interaction)", y.label = "Positive affect", interval = TRUE, plot.points = TRUE, legend.main = "Well-being") 
+P_age_wb <- interact_plot(P_mean, pred = age, modx = swlsmean, x.label = "Age", y.label = "Positive affect", interval = TRUE, plot.points = TRUE, legend.main = "Well-being") 
 P_age_wb <- P_age_wb + theme_classic() + theme(legend.position = "bottom")
 
 #*supplemental pos (just pos not pooled variance)
@@ -232,7 +223,7 @@ summ(N_mean, scale = TRUE,  confint = TRUE)
 
 
 N_age_controlling_wb <- effect_plot(N_mean_age, pred = "age", x.label = "Age \n (controlling for well-being)", y.label = "Negative affect", interval=TRUE, plot.points = TRUE)
-N_age_controlling_wb <- N_age_controlling_wb + theme_apa()
+N_age_controlling_wb <- N_age_controlling_wb + theme_classic()
 
 N_age_wb <- interact_plot(N_mean, pred = "age", modx = "swlsmean", x.label = "Age", y.label = "Negative affect", legend.main = "Well-being", interval = TRUE, plot.points = TRUE)
 N_age_wb <- N_age_wb + theme_classic() + theme(legend.position = "bottom")
@@ -291,7 +282,6 @@ library(dplyr)
 d_wide <- d %>%
   group_by(subject,age,swlsmean) %>%
   dplyr::summarize(p_rmssd_avg = mean(p_rmssd_avg), n_rmssd_avg = mean(n_rmssd_avg), p_rmssd = mean(p_rmssd), n_rmssd = mean(n_rmssd))
-#turn to df so DAAG can use
 d_wide <- as.data.frame(d_wide)
 
 
@@ -314,11 +304,11 @@ P_age <- effect_plot(P_nonlin, pred = "age", x.label = "Age \n (controlling for 
 P_age <- P_age + ylim(0,2) + theme_classic() 
 
 #wb
-P_wb <- effect_plot(P_nonlin, pred ="swlsmean", x.label = "Well-being \n (non-significant)", y.label = "Positive affect \n instability", interval = TRUE, plot.points = TRUE, scale = TRUE)
+P_wb <- effect_plot(P_nonlin, pred ="swlsmean", x.label = "Well-being", y.label = "Positive affect \n instability", interval = TRUE, plot.points = TRUE, scale = TRUE)
 P_wb <- P_wb + ylim(0,2) + theme_classic()
 
 #int
-P_age_wb <- interact_plot(P_nonlin, pred = "age", modx = "swlsmean", x.label = "Age", y.label = "Positive affect \n instability \n (non-significant)", legend.main = "Well-being", interval = TRUE, plot.points=TRUE)
+P_age_wb <- interact_plot(P_nonlin, pred = "age", modx = "swlsmean", x.label = "Age", y.label = "Positive affect \n instability", legend.main = "Well-being", interval = TRUE, plot.points=TRUE)
 P_age_wb <- P_age_wb + ylim(0,2) + theme_classic() + theme(legend.position = "bottom")
 
 
@@ -354,7 +344,7 @@ N_age <- effect_plot(N_nonlin, pred ="age", x.label = "Age \n (controlling for w
 N_age <- N_age + ylim(0,2) + theme_classic()
 
 #wb
-N_wb <- effect_plot(N_nonlin, pred ="swlsmean", x.label = "Well-being  \n (non-significant)", y.label = "Negative affect \n instability", interval = TRUE, plot.points = TRUE)
+N_wb <- effect_plot(N_nonlin, pred ="swlsmean", x.label = "Well-being", y.label = "Negative affect \n instability", interval = TRUE, plot.points = TRUE)
 N_wb <- N_wb + ylim(0,2) + theme_classic()
 
 #int
@@ -401,69 +391,15 @@ plot_grid(plots, legend, ncol = 1, rel_heights = c(1, .1))
 ggsave("instability_effects.pdf", plot = last_plot(), device = "pdf",
        scale = 1, width = 7, height = 7, dpi = 300)
 
-
-#*age x well being predicting desire strength####
-des_stren <- lmer(desire_strength ~ age * swlsmean + (1|subject), data = d)
-summ(des_stren, center=TRUE, confint = TRUE)
-#Pseudo-R² (fixed effects) = 0.03
-#Pseudo-R² (total) = 0.30 
-#                    Est.    2.5%   97.5%   t val.     d.f.      p
-#(Intercept)           4.39    4.25    4.54    59.04   103.95   0.00
-#age                   0.21    0.06    0.36     2.80   103.01   0.01
-#swlsmean              0.09   -0.05    0.24     1.24   101.74   0.22
-#age:swlsmean         -0.11   -0.26    0.04    -1.49    99.99   0.14
-
-
-#*age x well being predicting proportion desires were present####
-library(dplyr)
-d$desire_present <- ifelse(d$desire_type != 13, 1, 0)
-proportion_desire_present <- d %>% 
-  count(subject, desire_present) %>%          
-  mutate(prop = prop.table(n))
-
-proportion_desire_present$prop_desire_present <- proportion_desire_present$prop
-
-d <- merge(d, proportion_desire_present, by = "subject")
-
-d$prop_desire_present <- (1-d$prop_desire_present)
-
-des_proportion <- lmer(prop_desire_present ~ age * swlsmean + (1|subject), data = d)
-summ(des_proportion, center=TRUE, confint = TRUE)
-#Pseudo-R² (fixed effects) = 0.00 # no variablity
-#Est.    2.5%   97.5%    t val.     d.f.      p
-#(Intercept)           0.99    0.99    0.99   2562.34   113.00   0.00
-#age                  -0.00   -0.00    0.00     -0.15   113.00   0.88
-#swlsmean              0.00   -0.00    0.00      0.02   113.00   0.98
-#age:swlsmean          0.00   -0.00    0.00      0.62   113.00   0.54
-
-
-#*age x well being predicting proportion attempt resist####
-library(dplyr)
-proportion_attempt_resist <- d %>% 
-  count(subject, attempt_resist) %>%          
-  mutate(prop = prop.table(n))
-
-proportion_attempt_resist$prop_attempt_resist <- proportion_attempt_resist$prop
-
-d <- merge(d, proportion_attempt_resist, by = "subject")
-
-d$prop_attempt_resist <- (1-d$prop_attempt_resist)
-
-des_proportion_attempt_resist <- lmer(prop_attempt_resist ~ age * swlsmean + (1|subject), data = d)
-summ(des_proportion_attempt_resist, center=TRUE, confint = TRUE)
-#Pseudo-R² (fixed effects) = 0.00 #no variability
-#Pseudo-R² (total) = 0.30 
-#                      Est.    2.5%   97.5%    t val.    d.f.      p
-#(Intercept)           1.00    0.99    1.00   5284.83   96.53   0.00
-#age                  -0.00   -0.00    0.00     -0.86   96.31   0.39
-#swlsmean              0.00   -0.00    0.00      0.04   95.62   0.97
-#age:swlsmean         -0.00   -0.00    0.00     -0.41   94.44   0.68
-
-  
 #*were you successful####
 #models cant include desire resist or desire enacted
-suc_reg <- glmer(succ_reg ~ others_present + desire_conflict_personal_goals + desire_strength + scale(age) + p_rmssd_avg + p_avg + n_rmssd_avg + n_avg + scale(swlsmean) + others_present:age + desire_conflict_personal_goals:age + desire_strength:age + p_rmssd_avg:age + p_avg:age + n_rmssd_avg:age + n_avg:age + swlsmean:age + (1|subject), data = d, family = binomial, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 
+succ_reg_table <- table(d$succ_reg)
+prop.table(succ_reg_table)
+#0 unsuccesful          1 successful
+#0.086                  0.913
+
+suc_reg <- glmer(succ_reg ~ others_present + desire_conflict_personal_goals + desire_strength + scale(age) + p_rmssd_avg + p_avg + n_rmssd_avg + n_avg + scale(swlsmean) + others_present:age + desire_conflict_personal_goals:age + desire_strength:age + p_rmssd_avg:age + p_avg:age + n_rmssd_avg:age + n_avg:age + swlsmean:age + (1|subject), data = d, family = binomial, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 summ(suc_reg, scale=TRUE, confint = TRUE)
 #Pseudo-R² (fixed effects) = 0.16
 #Pseudo-R² (total) = 0.37 
@@ -492,16 +428,8 @@ succ_reg_age_wb <- interact_plot(suc_reg, pred = age, modx = swlsmean, interval 
 succ_reg_age_wb <- succ_reg_age_wb + theme_classic() + theme(legend.position = "bottom")
 
 ggsave("regulation_age_wb_effects.eps", plot = last_plot(), device = "eps",
-       scale = 1, width = 3.5, height = 6, dpi = 300)
+       scale = 1, width = 3.5, height = 4, dpi = 300)
 
-interact_plot(suc_reg, pred = age, modx = desire_conflict_personal_goals, interval = TRUE, outcome.scale = "response", y.label = "Predicted probabiltiy of successful regulation", x.label = "Age", legend.main = "Well-being")
-
-
-#test
-library(extrafont)
-#font_import() only do this one time - it takes a while
-loadfonts(device="win")
-ggsave("regulation_effects.pdf", width = 20, height = 20, device = "pdf", family = "Times")
 
 coef_names = c("Age:Negative affect" = "age:n_avg", "Age:Positive affect" = "age:p_avg","Age:Well-being" = "age:swlsmean", "Age:Negative affect instability" = "age:n_rmssd_avg", "Age:Positive affect instability" = "age:p_rmssd_avg", "Age:Desire strength" = "desire_strength:age", "Age:Desire conflicts goals" = "desire_conflict_personal_goals:age", "Age:Others present" = "others_present:age", "Well-being" = "swlsmean", "Negative affect instability" = "n_rmssd_avg", "Positive affect instability" = "p_rmssd_avg", "Age" = "age", "Desire strength" = "desire_strength", "Desire conflicts goals" = "desire_conflict_personal_goals", "Others present" = "others_present", "Positive affect" = "p_avg", "Negative affect" = "n_avg")
 plot_summs(suc_reg, center = TRUE, plot.distributions = TRUE, robust = TRUE, coefs = coef_names)
@@ -537,4 +465,98 @@ summ(suc_reg_supp, center=TRUE, confint = TRUE)
 
 #y axis is predicted probability of successful regulation
 
+
+#*desire strength####
+des_stren <- lmer(desire_strength ~ age * swlsmean + (1|subject), data = d)
+summ(des_stren, scale=TRUE, confint = TRUE)
+#Pseudo-R² (fixed effects) = 0.03
+#Pseudo-R² (total) = 0.30 
+#                    Est.    2.5%   97.5%   t val.     d.f.      p
+#(Intercept)           4.39    4.25    4.54    59.04   103.95   0.00
+#age                   0.21    0.06    0.36     2.80   103.01   0.01
+#swlsmean              0.09   -0.05    0.24     1.24   101.74   0.22
+#age:swlsmean         -0.11   -0.26    0.04    -1.49    99.99   0.14
+
+
+#*desire presence####
+library(dplyr)
+d$desire_present <- ifelse(d$desire_type != 13, 1, 0)
+proportion_desire_present <- d %>% 
+  count(subject, desire_present) %>%          
+  mutate(prop = prop.table(n))
+
+proportion_desire_present$prop_desire_present <- proportion_desire_present$prop
+proportion_desire_present$prop_desire_present <- 1 - proportion_desire_present$prop
+
+d <- merge(d, proportion_desire_present, by = "subject")
+
+desire_present_table <- table(d$desire_present)
+prop.table(desire_present_table)
+#           0            1 
+#0.003259984 0.996740016 
+
+#mixed
+des_present <- glmer(desire_present ~ age * swlsmean + (1|subject), family = binomial, data = d, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
+summ(des_present, scale=TRUE, confint = TRUE)
+#MODEL FIT:
+#AIC = 35.02, BIC = 64.05
+#Pseudo-R² (fixed effects) = 0.94
+#Pseudo-R² (total) = 1.00 #desires so often present, no variability
+#                        Est.     2.5%    97.5%   z val.      p
+#age                   26.50   -46.03    99.03     0.72   0.47
+#swlsmean             -17.38   -82.98    48.22    -0.52   0.60
+#age:swlsmean         -14.09   -68.17    39.99    -0.51   0.61
+
+
+#stationary
+des_proportion_nonmixed <- lm(prop_desire_present ~ age * swlsmean, data = d)
+summ(des_proportion_nonmixed, scale=TRUE, confint = TRUE)
+#F(3,2442) = 7.05, p = 0.00
+#R² = 0.01
+#Adj. R² = 0.01 
+#Est.    2.5%   97.5%     t val.      p
+#(Intercept)           0.99    0.99    0.99   17687.93   0.00
+#age                  -0.00   -0.00    0.00      -1.50   0.13
+#swlsmean             -0.00   -0.00   -0.00      -2.82   0.00
+#age:swlsmean          0.00    0.00    0.00       3.34   0.00
+
+#*attempt resist####
+library(dplyr)
+proportion_attempt_resist <- d %>% 
+  count(subject, attempt_resist) %>%          
+  mutate(prop = prop.table(n))
+
+proportion_attempt_resist$prop_attempt_resist <- proportion_attempt_resist$prop
+proportion_attempt_resist$prop_attempt_resist <- 1 - proportion_attempt_resist$prop
+
+d <- merge(d, proportion_attempt_resist, by = "subject")
+
+attempt_resist_table <- table(d$attempt_resist)
+prop.table(attempt_resist_table)
+#        0         1 
+#0.6998362 0.3001638 
+
+#mixed
+attempt_resist_mixed <- glmer(attempt_resist ~ age * swlsmean + (1|subject), family = binomial, data = d, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
+summ(attempt_resist_mixed, scale=TRUE, confint = TRUE)
+#AIC = 5195.91, BIC = 5228.23
+#Pseudo-R² (fixed effects) = 0.06
+#Pseudo-R² (total) = 0.29 
+#                                        Est.    2.5%   97.5%   z val.      p
+#(Intercept)                            -1.07   -1.29   -0.86    -9.81   0.00
+#scale(age)                             -0.41   -0.62   -0.19    -3.69   0.00
+#scale(swlsmean)                        -0.36   -0.58   -0.15    -3.29   0.00
+#scale(age)`:`scale(swlsmean)           -0.01   -0.22    0.20    -0.09   0.93
+
+#stationary
+attempt_resist_nonmixed <- lm(prop_attempt_resist ~ age * swlsmean, data = d)
+summ(attempt_resist_nonmixed, scale=TRUE, confint = TRUE)
+#F(3,4744) = 2.40, p = 0.07
+#R² = 0.00
+#Adj. R² = 0.00 
+#Est.    2.5%   97.5%     t val.      p
+#(Intercept)           0.99    0.99    0.99   21051.78   0.00
+#age                  -0.00   -0.00   -0.00      -2.25   0.02
+#swlsmean             -0.00   -0.00    0.00      -1.75   0.08
+#age:swlsmean         -0.00   -0.00    0.00      -0.18   0.85
 
